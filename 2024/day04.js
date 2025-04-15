@@ -19,7 +19,7 @@ function part1(input) {
 
     // at every x,y check every direction
     for(let row = 0; row < rows; row++) {
-        for(let col = 0; col < cols; col++) {
+        for(let col = 0; col < cols; col++) {  
             for(let [dRow, dCol] of directions) {
                 let matched = true;
 
@@ -50,7 +50,31 @@ function part1(input) {
 }
 
 function part2(input) {
-    return null;
+    const lines = input.trim().split('\n');
+    const rows = lines.length;
+    const cols = lines[0].length;
+    let count = 0;
+
+    for(let row = 0; row < rows; row++) {
+        for(let col = 0; col < cols; col++) {
+            if(lines[row][col] == "A") {
+                if(row-1 < 0 || row+1 >= rows || col-1 < 0 || col+1 >= cols) {
+                    continue;
+                }
+
+                // diagonal checks for MAS or SAM
+                const d1 = lines[row - 1][col - 1] + lines[row][col] + lines[row + 1][col + 1];
+                const d2 = lines[row - 1][col + 1] + lines[row][col] + lines[row + 1][col - 1];
+                const isValid = (s) => s === "MAS" || s === "SAM";
+
+                if (isValid(d1) && isValid(d2)) {
+                    count++;
+                }
+            }
+        }
+    }
+    
+    return count;
 }
 
 module.exports = { part1, part2 };
