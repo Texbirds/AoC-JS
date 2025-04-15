@@ -15,7 +15,30 @@ function part1(input) {
 }
 
 function part2(input) {
-    return null;
+    // finds all matches, captures the first and second digit and all instances of do() and don't()
+    const matches = input.matchAll(/mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don't\(\)/g);
+
+    let total = 0;
+    let enabledFlag = true;
+
+    // multiplies all instances, also saves last state
+    for (const match of matches) {
+        if(match[0] == "do()") {
+            enabledFlag = true;
+            continue;
+        } else if (match[0] == "don't()") {
+            enabledFlag = false;
+            continue;
+        }
+
+        if(enabledFlag) {
+            const first = parseInt(match[1]);
+            const second = parseInt(match[2]);
+            total += first * second;
+        }
+    }
+
+    return total;
 }
 
 module.exports = { part1, part2 };
