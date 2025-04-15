@@ -6,30 +6,10 @@ function part1(input) {
     for (let i = 0; i < lines.length; i++){
         // puts all numbers in this line inside an array, eliminates spaces
         const numbers = lines[i].trim().split(/\s+/).map(Number);
-        let direction = null;
-        let reportIsSafe = true;
 
-        // checks a single line
-        for(let j = 0; j < numbers.length - 1; j++) {
-            let difference = numbers[j] - numbers[j+1]
-
-            // check if it's increasing by atleast one or max three
-            if(Math.abs(difference) < 1 || Math.abs(difference) > 3) {
-                reportIsSafe = false;
-                continue;
-            }
-
-            // check if it's increasing or decreasing; entire line must follow this behaviour
-            if(direction == null) {
-                direction = difference > 0 ? "decreasing" : "increasing";
-            } else if((direction == "decreasing" && difference < 0) || (direction == "increasing" && difference > 0)) {
-                reportIsSafe = false;
-                continue;
-            }
-        }
-        // increment safe reports count
-        if(reportIsSafe) {
+        if (isSafeReport(numbers)) {
             totalSafeReports++;
+            continue;
         }
     }
 
@@ -37,7 +17,59 @@ function part1(input) {
 }
 
 function part2(input) {
-    return null;
+    const lines = input.trim().split('\n');
+    let totalSafeReports = 0;
+
+    for (let line of lines) {
+        const numbers = line.trim().split(/\s+/).map(Number);
+
+        if (isSafeReport(numbers)) {
+            totalSafeReports++;
+            continue;
+        }
+
+        let safeAfterRemoval = false;
+
+        // try removing one element at a time
+        for (let i = 0; i < numbers.length; i++) {
+            const copy = [...numbers];
+            copy.splice(i, 1);
+
+            if (isSafeReport(copy)) {
+                safeAfterRemoval = true;
+                break;
+            }
+        }
+
+        if (safeAfterRemoval) {
+            totalSafeReports++;
+        }
+    }
+
+    return totalSafeReports;
+}
+
+function isSafeReport(numbers) {
+    let direction = null;
+
+    for (let i = 0; i < numbers.length - 1; i++) {
+        const diff = numbers[i + 1] - numbers[i];
+
+        if (Math.abs(diff) < 1 || Math.abs(diff) > 3) {
+            return false;
+        }
+
+        if (direction === null) {
+            direction = diff > 0 ? "increasing" : "decreasing";
+        } else if (
+            (direction === "increasing" && diff < 0) ||
+            (direction === "decreasing" && diff > 0)
+        ) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 module.exports = { part1, part2 };
