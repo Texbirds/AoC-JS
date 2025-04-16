@@ -10,9 +10,9 @@ function part1(input) {
         return { target, numbers };
     });
 
-    
+
     for(const { target, numbers } of equations){
-        for(const combo of generateOperatorCombos(numbers.length)) {
+        for(const combo of generateOperatorCombos(numbers.length, ['+', '*'])) {
             const result = calculate(numbers, combo);
             if(result === target) {
                 correctTargets.push(result);
@@ -54,17 +54,50 @@ function generateOperatorCombos(numCount, operators = ['+', '*']) {
 function calculate(numbers, operators) {
     let result = numbers[0];
     for (let i = 0; i < operators.length; i++) {
-        if (operators[i] === '+') result += numbers[i + 1];
-        else if (operators[i] === '*') result *= numbers[i + 1];
+        const next = numbers[i + 1];
+        const operator = operators[i];
+
+        // changed to accept || as operator
+        if(operator === '+') {
+            result += next;
+        } else if(operator === '*') {
+            result *= next;
+        } else if(operator === '||') {
+            result = Number(`${result}${next}`);
+        }
     }
     return result;
 }
 
-
-
-
 function part2(input) {
-    return null;
+    const lines = input.trim().split('\n');
+    const correctTargets = [];
+
+    // split lines up into easy-to-use targets and numbers
+    const equations = lines.map(line => {
+        const [left, right] = line.split(':');
+        const target = Number(left.trim());
+        const numbers = right.trim().split(/\s+/).map(Number);
+        return { target, numbers };
+    });
+
+
+    for(const { target, numbers } of equations){
+        for(const combo of generateOperatorCombos(numbers.length, ['+', '*', '||'])) {
+            const result = calculate(numbers, combo);
+            if(result === target) {
+                correctTargets.push(result);
+                break;
+            }
+        }
+    }
+
+    let total = 0;
+    for(const result of correctTargets) {
+        total += result;
+    }
+
+    return total;
 }
 
 module.exports = { part1, part2 };
